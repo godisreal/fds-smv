@@ -9386,17 +9386,20 @@ CONTAINS
                             N_DEAD = N_DEAD+1
                          END IF
                       END IF
-
-                      FC_X1 = (X_TMP(III)-X_TMP(JJJ))*HR_A*COSPHIFAC* &
-                           EXP( -(TIM_DIST-( R_TMP(III)+R_TMP(JJJ) )*DFactor(III, JJJ))/HR_B )/TIM_DIST*(( R_TMP(III)+R_TMP(JJJ) )*DFactor(III, JJJ)-TIM_DIST)
+			    
+		     IF (COHESIVE_SOCIAL_FORCE) THEN
+			FC_X1 = (X_TMP(III)-X_TMP(JJJ))*HR_A*COSPHIFAC* &
+                           EXP( -(TIM_DIST-( R_TMP(III)+R_TMP(JJJ) )*DFactor(III, JJJ))/HR_B)/TIM_DIST*(( R_TMP(III)+R_TMP(JJJ) )*DFactor(III, JJJ)-TIM_DIST)
 			   
-                      FC_Y1 = (Y_TMP(III)-Y_TMP(JJJ))*HR_A*COSPHIFAC* &
-                           EXP( -(TIM_DIST-( R_TMP(III)+R_TMP(JJJ) )*DFactor(III, JJJ))/HR_B )/TIM_DIST*(( R_TMP(III)+R_TMP(JJJ) )*DFactor(III, JJJ)-TIM_DIST)
-
-                      !FC_X1 = (X_TMP(III)-X_TMP(JJJ))*HR_A*COSPHIFAC* &
-                      !     EXP( -(TIM_DIST-( R_TMP(III)+R_TMP(JJJ) ))/HR_B )/TIM_DIST
-                      !FC_Y1 = (Y_TMP(III)-Y_TMP(JJJ))*HR_A*COSPHIFAC* &
-                      !     EXP( -(TIM_DIST-( R_TMP(III)+R_TMP(JJJ) ))/HR_B )/TIM_DIST
+			FC_Y1 = (Y_TMP(III)-Y_TMP(JJJ))*HR_A*COSPHIFAC* &
+                           EXP( -(TIM_DIST-( R_TMP(III)+R_TMP(JJJ) )*DFactor(III, JJJ))/HR_B)/TIM_DIST*(( R_TMP(III)+R_TMP(JJJ) )*DFactor(III, JJJ)-TIM_DIST)
+			
+		       ELSE
+			    FC_X1 = (X_TMP(III)-X_TMP(JJJ))*HR_A*COSPHIFAC* &
+				EXP( -(TIM_DIST-( R_TMP(III)+R_TMP(JJJ) ))/HR_B )/TIM_DIST
+			    FC_Y1 = (Y_TMP(III)-Y_TMP(JJJ))*HR_A*COSPHIFAC* &
+				EXP( -(TIM_DIST-( R_TMP(III)+R_TMP(JJJ) ))/HR_B )/TIM_DIST
+		      END IF
 		      
                       IF ( (FC_X1**2+FC_Y1**2) > (FC_X**2+FC_Y**2) ) THEN
                          FC_X = FC_X1
