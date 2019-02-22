@@ -401,7 +401,8 @@ MODULE EVAC
        ALPHA_HAWK, DELTA_HAWK, EPSILON_HAWK, THETA_HAWK, A_HAWK_T_START, T_STOP_HD_GAME, &
        F_MIN_FALL, F_MAX_FALL, D_OVERLAP_FALL, TAU_FALL_DOWN, A_FAC_FALLEN, TIME_FALL_DOWN, PROB_FALL_DOWN, &
        T_ASET_HAWK, T_0_HAWK, T_ASET_TFAC_HAWK, MAX_INITIAL_OVERLAP, TIME_INIT_NERVOUSNESS, &
-       SMOKE_SPEED_ALPHA, SMOKE_SPEED_BETA, CROWBAR_DT_READ, NASH_CLOSE_ENOUGH
+       SMOKE_SPEED_ALPHA, SMOKE_SPEED_BETA, CROWBAR_DT_READ, NASH_CLOSE_ENOUGH, &
+       TPRE_TAU, TPRE_TAU_INER
   INTEGER, DIMENSION(3) :: DEAD_RGB
   !
   REAL(EB), DIMENSION(:), ALLOCATABLE :: Tsteps
@@ -583,7 +584,7 @@ CONTAINS
          T_ASET_HAWK, T_0_HAWK, T_ASET_TFAC_HAWK, &
          MAXIMUM_V0_FACTOR, MAX_INITIAL_OVERLAP, TIME_INIT_NERVOUSNESS, &
          SMOKE_SPEED_ALPHA, SMOKE_SPEED_BETA, SMOKE_KS_SPEED_FUNCTION, FED_ACTIVITY, &
-         CROWBAR_DT_READ
+         CROWBAR_DT_READ, TPRE_TAU, TPRE_TAU_INER
     !Issue1547: Added new output keyword for the PERS namelist, here the new output
     !Issue1547: keyword OUTPUT_NERVOUSNES is added to the namelist. Also the user input
     !Issue1547: for the social force MAXIMUM_V0_FACTOR is added to the namelist.
@@ -1478,6 +1479,10 @@ CONTAINS
       ! c(Ks) = ( 1 + (BETA*Ks)/ALPHA )  [0,1] interval, c(Ks=0)=1, c(Ks=inf)=0
       SMOKE_SPEED_ALPHA = 0.706_EB   ! Lund 2003, report 3126 (Frantzich & Nilsson)
       SMOKE_SPEED_BETA  = -0.057_EB  ! Lund 2003, report 3126 (Frantzich & Nilsson)
+      
+      ! Tune mobility of agent in pre-evacuation time period
+      TPRE_TAU = 10.0_EB
+      TPRE_TAU_INER = 1.3_EB
 
       ! Next parameters are for the counterflow (CF)
       ! Evac 2.2.0: Counterflow treatment is the default
@@ -8099,8 +8104,8 @@ CONTAINS
           END IF
 
           IF (T < T_BEGIN .OR. T < TPRE) THEN
-             HR_TAU = MAX(CF_MIN_TAU, 0.1_EB*HR%TAU)
-             HR_TAU_INER = MAX(CF_MIN_TAU_INER, 0.1_EB*HR%TAU_INER)
+             HR_TAU = MAX(TPRE_TAU, CF_MIN_TAU, 0.1_EB*HR%TAU)
+             HR_TAU_INER = MAX(TPRE_TAU_INER, CF_MIN_TAU_INER, 0.1_EB*HR%TAU_INER)
           END IF
 
           ! Counterflow: Increase motivation to go ahead
@@ -8858,8 +8863,8 @@ CONTAINS
              TPRE = HR%TDET ! Member of a group
           END IF
           IF (T < T_BEGIN .OR. T < TPRE) THEN
-             HR_TAU = MAX(CF_MIN_TAU, 0.1_EB*HR%TAU)
-             HR_TAU_INER = MAX(CF_MIN_TAU_INER, 0.1_EB*HR%TAU_INER)
+             HR_TAU = MAX(TPRE_TAU, CF_MIN_TAU, 0.1_EB*HR%TAU)
+             HR_TAU_INER = MAX(TPRE_TAU_INER, CF_MIN_TAU_INER, 0.1_EB*HR%TAU_INER)
           END IF
           ! =======================================================
           ! Speed dependent social force
@@ -9387,16 +9392,16 @@ CONTAINS
                          END IF
                       END IF
 
-                      FC_X1 = (X_TMP(III)-X_TMP(JJJ))*HR_A*COSPHIFAC* &
-                           EXP( -(TIM_DIST-( R_TMP(III)+R_TMP(JJJ) )*DFactor(III, JJJ))/HR_B )/TIM_DIST*(( R_TMP(III)+R_TMP(JJJ) )*DFactor(III, JJJ)-TIM_DIST)
-			   
-                      FC_Y1 = (Y_TMP(III)-Y_TMP(JJJ))*HR_A*COSPHIFAC* &
-                           EXP( -(TIM_DIST-( R_TMP(III)+R_TMP(JJJ) )*DFactor(III, JJJ))/HR_B )/TIM_DIST*(( R_TMP(III)+R_TMP(JJJ) )*DFactor(III, JJJ)-TIM_DIST)
-
                       !FC_X1 = (X_TMP(III)-X_TMP(JJJ))*HR_A*COSPHIFAC* &
-                      !     EXP( -(TIM_DIST-( R_TMP(III)+R_TMP(JJJ) ))/HR_B )/TIM_DIST
+                      !     EXP( -(TIM_DIST-( R_TMP(III)+R_TMP(JJJ) )*DFactor(III, JJJ))/HR_B )/TIM_DIST*(( R_TMP(III)+R_TMP(JJJ) )*DFactor(III, JJJ)-TIM_DIST)
+			   
                       !FC_Y1 = (Y_TMP(III)-Y_TMP(JJJ))*HR_A*COSPHIFAC* &
-                      !     EXP( -(TIM_DIST-( R_TMP(III)+R_TMP(JJJ) ))/HR_B )/TIM_DIST
+                      !     EXP( -(TIM_DIST-( R_TMP(III)+R_TMP(JJJ) )*DFactor(III, JJJ))/HR_B )/TIM_DIST*(( R_TMP(III)+R_TMP(JJJ) )*DFactor(III, JJJ)-TIM_DIST)
+
+                      FC_X1 = (X_TMP(III)-X_TMP(JJJ))*HR_A*COSPHIFAC* &
+                           EXP( -(TIM_DIST-( R_TMP(III)+R_TMP(JJJ) ))/HR_B )/TIM_DIST
+                      FC_Y1 = (Y_TMP(III)-Y_TMP(JJJ))*HR_A*COSPHIFAC* &
+                           EXP( -(TIM_DIST-( R_TMP(III)+R_TMP(JJJ) ))/HR_B )/TIM_DIST
 		      
                       IF ( (FC_X1**2+FC_Y1**2) > (FC_X**2+FC_Y**2) ) THEN
                          FC_X = FC_X1
@@ -10027,7 +10032,7 @@ CONTAINS
           ! Add self-propelling force terms, self-consistent VV
           ! (First time step towards the exit door)
           IF ( T <= TPRE ) THEN
-             HR_TAU = MAX(CF_MIN_TAU, 0.1_EB*HR%TAU)
+             HR_TAU = MAX(TPRE_TAU, CF_MIN_TAU, 0.1_EB*HR%TAU)
              IF ( (T+DTSP_NEW) > TPRE) THEN
                 EVEL = SQRT(UBAR**2 + VBAR**2)
                 IF (EVEL >= TWO_EPSILON_EB) THEN
