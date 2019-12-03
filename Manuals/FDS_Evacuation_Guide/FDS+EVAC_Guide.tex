@@ -1798,7 +1798,7 @@ last two rows have no preference.  This is because the agents are
 unaware of the exits that are unfamiliar and invisible and, thus,
 can not select these exits.  The last column shows the colours used in
 Smokeview to show the status of the agents, if this colouring option
-is chosen by the user.}\label{Table_pref_order}
+is chosen by the user (COLOR_METHOD=5, see Section 8.7).}\label{Table_pref_order}
 \vspace{12pt}
 \begin{tabular}{c|c|c|c|c} \hline \hline
 Preference&Visible&Familiar&Disturbing conditions\\ \hline 
@@ -1869,7 +1869,7 @@ exits but are not so willing to use special emergency exits.
 \noindent The active agent type is very similar to the conservative
 agent type.  The difference is that active agents observe their
 environment actively to find the fastest exit route.  Hence, active
-agents prefer all visible exits similarly regardless if the exits are
+agents prefer all visible exits similarly regardless of whether the exits are
 familiar or not.  Detection and reaction times are like those of
 conservative agents and lost active agents are treated similarly to
 lost conservative agents.  Heterogeneous crowds contain more and less
