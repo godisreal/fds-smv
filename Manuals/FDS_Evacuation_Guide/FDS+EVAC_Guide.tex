@@ -3830,7 +3830,7 @@ parameters.  The units of the input numbers are the standard SI units
 if not stated otherwise.
 
 
-Note, that the FDS+Evac is still under construction and so is this
+Note, that the FDS+Evac is still under development and so is this
 manual.  See the example FDS+Evac calculations and read through the
 example input files on the FDS+Evac web page.  These example input
 files contain many comment lines, which explain all the major features
@@ -3859,7 +3859,7 @@ are listed below:
 \item The evacuation meshes are two dimensional, \emph{i.e.}, they
   should have \Timtt{IJK=N${}_x$,N${}_y$,1} on the \Timtt{MESH}
   namelists, where N${}_x$ and N${}_y$ are the number of cells in the
-  $x$ and $y$ directions, respectively.  An unique \Timtt{ID} string
+  $x$ and $y$ directions, respectively.  A unique \Timtt{ID} string
   should be given to all evacuation meshes.
 %
 \item In addition to the user defined meshes, there is automatically
@@ -3913,7 +3913,7 @@ are listed below:
   in the evacuation geometry where no door nor exit is defined.
 %
 \item Check your \Timtt{EVAC} namelists that you are not trying to put
-  too many agents on a too small area.  Typical diameter of an agent
+  too many agents in a small area.  Typical diameter of an agent
   is somewhere between 0.5--0.6~m, so you can not put more than about
   four persons per square meter.  If you are trying to populate the
   floor denser, the programme will stop after the initialisation
